@@ -31,11 +31,14 @@ def POE(POE):
     print '[*] Running grep against: ' + POE.domainlist
     FLOG.WriteLogFile(POE.logfile, '[*] Running grep against: ' + POE.domainlist + '\n')
 
+    print '[*] Number of items in keyword list: ' + str(len(POE.keyword_list))
+    FLOG.WriteLogFile(POE.logfile, '[*] Number of items in keyword list: ' + str(len(POE.keyword_list)) + '\n')
+
     # Cheeky way to create the output file initially with two columns as a csv...
-    subproc = subprocess.Popen('echo Keyword,Domain >> ' + POE.outputdir + '/' + 'output.csv', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)    
+    subproc = subprocess.Popen('echo Keyword,Domain >> ' + POE.outputdir + '/' + 'output.csv', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
    
     #Cycle through each keyword in our list...
-    for i in POE.keyword_list:         
+    while Count < len(POE.keyword_list):         
         #Reduce the amount of search time by checking for any results of a particular keyword first before doing the grep...
         subproc = subprocess.Popen('if grep -q ' + POE.keyword_list[Count] + ' ' + POE.domainlist + '; then echo "found"; else echo "not located"; fi', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         for grepq_data in subproc.stdout.readlines():
@@ -60,6 +63,8 @@ def POE(POE):
                 print '[*] No matches for keyword: ' + POE.keyword_list[Count] + ' found.  Checking next enty...'
                 FLOG.WriteLogFile(POE.logfile, '[*] No matches for keyword: ' + POE.keyword_list[Count] + ' found.  Checking next enty...\n') 
 
-            Count += 1                              
+            Count += 1
+            if (POE.debug == True):
+                print '[DEBUG] Item Count: ' + str(Count)                              
 
     return 0
